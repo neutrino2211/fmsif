@@ -1,0 +1,37 @@
+start 30
+
+section hello()
+start 3
+db hello 'Hello from fmsif'
+db _Constant_value 0xff
+db _Constant_int32 0xffff
+db _Constant_int64 0xffffff
+put @_Constant_value 0x0
+put @_Constant_int32 0x1
+put @_Constant_int64 0x2
+println
+end hello()
+
+db hey 'Hello world'
+db msg 'Message'
+
+put @msg 0x0
+println
+
+call hello()
+
+allocate 1 onlyone
+allocate % vidmem
+
+push 0x03 @vidmem
+push 0x04 @vidmem
+
+put @onlyone 0x0
+println
+
+put @vidmem 0x0
+println
+
+set @vidmem 40
+put @vidmem 0x0
+println

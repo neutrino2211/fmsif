@@ -1,0 +1,71 @@
+start 32
+
+db _TestVal_ 0x30
+db _array_pushes_counter 0
+
+section print_array_loop()
+start 64
+set @_Constant_array#value [@tmp#@_Constant_counter]
+put 'array[' 0x0
+print
+put @_Constant_counter 0x0
+print
+put '] = ' 0x0
+print
+put @_Constant_array#value 0x0
+println
+inc @_Constant_counter
+ret
+end print_array_loop()
+
+section print_array()
+start 64
+allocate % tmp
+db _Constant_array#value 0
+db _Constant_counter 0
+db _Constant_size {%M1}
+# The array should be at M1 so move it into the space tmp
+mov @tmp %M1
+cmp @_Constant_counter @_Constant_size
+jne print_array_loop()
+put 'Done' 0x0
+println
+end print_array()
+
+section populate_array_loop()
+start 64
+db _add_result @_TestVal_
+add @_add_result @_array_pushes_counter
+push @_add_result @tmp
+inc @_array_pushes_counter
+put @_array_pushes 0
+print
+put ' - ' 0
+print
+put @_array_pushes_counter 0
+print
+put $cmp 0
+println
+ret
+end populate_array_loop()
+
+section populate_array()
+start 1
+allocate % tmp
+db _array_pushes %M1
+mov @tmp %M2
+cmp @_array_pushes_counter 0x20
+jne populate_array_loop()
+
+end populate_array()
+
+allocate % my_array
+
+mov %M1 0x20
+mov %M2 @my_array
+call populate_array()
+
+mov @my_array %M2
+
+mov %M1 @my_array
+call print_array()
